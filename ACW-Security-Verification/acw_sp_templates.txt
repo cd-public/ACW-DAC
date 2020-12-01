@@ -1,0 +1,181 @@
+//Security Property - 1:
+//C cannot read/write data while the ACW is being reset.
+//# of Generic Signals to Replace = 2
+SP01_RECEIVE_GENERIC: assert iflow(
+    `signal_from_P`
+    =/=>
+    `signal_to_C`
+    || (ARESETN != 0)
+);
+
+//Security Property - 1:
+//C cannot read/write data while the ACW is being reset.
+//# of Generic Signals to Replace = 2
+SP01_SEND_GENERIC: assert iflow(
+    `signal_from_C`
+    =/=>
+    `signal_to_P`
+    || (ARESETN != 0)
+);
+
+//Security Property - 2:
+//C receives the default/baseline AXI signals while the ACW is being reset.
+//# of Generic Signals to Replace = 2
+SP02_DEFAULT_GENERIC: assert iflow(
+    `signal_to_C` == `default_AXI_value`
+    || (ARESETN != 0)
+);
+
+//Security Property - 3:
+//The ACW outputs the default/baseline AXI signals to P while the ACW is being reset.
+//# of Generic Signals to Replace = 2
+SP03_DEFAULT_GENERIC: assert iflow(
+    `signal_to_P` == `default_AXI_value`
+    || (ARESETN != 0)
+);
+
+//Security Property - 4:
+//The configuration/information registers are cleared and set to contain the default/baseline values while the ACW is being reset.
+//# of Generic Signals to Replace = 2
+SP04_DEFAULT_GENERIC: assert iflow(
+    `register` == `default_value`
+    || (ARESETN != 1)
+);
+
+//Security Property - 5:
+//The TE can read from but not write to information registers.
+//# of Generic Signals to Replace = 2
+SP05_RONLY_GENERIC: assert iflow(
+    `signal_from_TE` 
+    =/=>
+    `info_register`
+);
+
+//Security Property - 6:
+//C cannot read/write data while the ACW is being configured.
+//# of Generic Signals to Replace = 2
+SP06_RECEIVE_GENERIC: assert iflow(
+    `signal_from_P`
+    =/=>
+    `signal_to_C`
+    || (slv_reg0 != 0)
+);
+
+//Security Property - 6:
+//C cannot read/write data while the ACW is being configured.
+//# of Generic Signals to Replace = 2
+SP06_SEND_GENERIC: assert iflow(
+    `signal_from_C`
+    =/=>
+    `signal_to_P`
+    || (slv_reg0 != 0)
+);
+
+//Security Property - 7:
+//C receives the default/baseline AXI signals while the ACW is being configured.
+//# of Generic Signals to Replace = 2
+SP07_DEFAULT_GENERIC: assert iflow(
+    `signal_to_C` == `default_AXI_value`
+    || (slv_reg0 != 0)
+);
+
+//Security Property - 8:
+//The ACW outputs the default/baseline AXI signals to P while the ACW is being configured.
+//# of Generic Signals to Replace = 2
+SP08_DEFAULT_GENERIC: assert iflow(
+    `signal_to_P` == `default_AXI_value`
+    || (slv_reg0 != 0)
+);
+
+//Security Property - 9:
+//The configuration/information registers contain the default/baseline values until they are modified by the TE (config.) and/or ACW (illegal req. metadata tracking).
+//# of Generic Signals to Replace = 2
+SP09_C_DEFAULT_GENERIC: assert iflow(
+    `config_register` == `default_value`
+    || (slv_reg0 != 0)
+);
+
+//Security Property - 9:
+//The configuration/information registers contain the default/baseline values until they are modified by the TE (config.) and/or ACW (illegal req. metadata tracking).
+//# of Generic Signals to Replace = 2
+SP09_R_I_DEFAULT_GENERIC: assert iflow(
+    `rinfo_register` == `default_value`
+    || (AR_ILL_TRANS != 0)
+);
+
+//Security Property - 9:
+//The configuration/information registers contain the default/baseline values until they are modified by the TE (config.) and/or ACW (illegal req. metadata tracking).
+//# of Generic Signals to Replace = 2
+SP09_W_I_DEFAULT_GENERIC: assert iflow(
+    `winfo_register` == `default_value`
+    || (AW_ILL_TRANS != 0)
+);
+
+//Security Property - 12:
+//C cannot read/write data while the ACW is isolating it after detecting an illegal request.
+//# of Generic Signals to Replace = 2
+SP12_RECEIVE_GENERIC: assert iflow(
+    `signal_from_P`
+    =/=>
+    `signal_to_C`
+    || ((AR_ILL_TRANS == 0) || (AW_ILL_TRANS == 0))
+);
+
+//Security Property - 12:
+//C cannot read/write data while the ACW is isolating it after detecting an illegal request.
+//# of Generic Signals to Replace = 2
+SP12_SEND_GENERIC: assert iflow(
+    `signal_from_C`
+    =/=>
+    `signal_to_P`
+    || ((AR_ILL_TRANS == 0) || (AW_ILL_TRANS == 0))
+);
+
+//Security Property - 13:
+//C receives the error AXI signals while the ACW is isolating it after detecting an illegal request.
+//# of Generic Signals to Replace = 2
+SP13_DEFAULT_GENERIC: assert iflow(
+    `signal_to_C` == `error_AXI_value`
+    || ((AR_ILL_TRANS == 0) || (AW_ILL_TRANS == 0))
+);
+
+//Security Property - 14:
+//The ACW outputs the default/baseline AXI signals to the P while the ACW is isolating after detecting an illegal request.
+//# of Generic Signals to Replace = 2
+SP14_DEFAULT_GENERIC: assert iflow(
+    `signal_to_P` == `default_AXI_value`
+    || ((AR_ILL_TRANS == 0) || (AW_ILL_TRANS == 0))
+);
+
+//Security Property - 15:
+//The information registers are updated with illegal request metadata after the ACW detects an illegal request.
+//# of Generic Signals to Replace = 2
+SP15_R_I_DEFAULT_GENERIC: assert iflow(
+    `rinfo_register` != `default_value`
+    || (AR_ILL_TRANS == 0)
+);
+
+//Security Property - 15:
+//The information registers are updated with illegal request metadata after the ACW detects an illegal request.
+//# of Generic Signals to Replace = 2
+SP15_W_I_DEFAULT_GENERIC: assert iflow(
+    `winfo_register` != `default_value`
+    || (AW_ILL_TRANS == 0)
+);
+
+//Security Property - 16:
+//An interrupt to TE is generated after the ACW detects an illegal request.
+//# of Generic Signals to Replace = 0
+SP16_R_INTERRUPT: assert iflow(
+    INTR_LINE_R == 1
+    || (AR_ILL_TRANS == 0)
+);
+
+//Security Property - 16:
+//An interrupt to TE is generated after the ACW detects an illegal request.
+//# of Generic Signals to Replace = 0
+SP16_W_INTERRUPT: assert iflow(
+    INTR_LINE_W == 1
+    || (AW_ILL_TRANS == 0)
+);
+
